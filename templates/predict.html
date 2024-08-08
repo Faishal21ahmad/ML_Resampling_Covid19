@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+
+{% block header %}
+   {{ title }} Covid 19 
+{% endblock %}
+
+{% block content %}
+
+    
+    <div class="flex">
+        <div class="flex w-full">
+            <div class="p-1">
+                <h1 class="font-semibold text-2xl">Petunjuk Penggunaan</h1>
+                <ol class="list-decimal list-inside">
+                    <li>Pilih File yang akan digunakan sebagai data Training</li>
+                    <li>Isi Form yang tampil dan Perhatikan Aturan Pengisian</li>
+                    <li>Hasil Akan Tampil Disebelah kanan form</li>
+                </ol>
+            </div>
+        </div>
+    
+        <!-- Informasi Data -->
+        
+        <div class="w-2/3">
+            {% if sel %}
+            <div class="w-full flex bg-slate-800 p-2 text-white right-1 rounded-md">
+                <div class="w-20">
+                    <p class="p-1">File</p>
+                    
+                </div>
+                <div class="">
+                    <p class="p-1 my-auto text-white font-semibold">=
+                       {{ sel }}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+            <div id="cvbginf" class="w-full hidden flex mt-2 bg-slate-800 p-2 text-white right-4 rounded-md">
+                <div id="tifoti" class="w-30">
+    
+                </div>
+                <div id="lifoli" class="">
+    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1 class="text-xl font-semibold p-1 mt-2">Pilih File</h1>
+    <form action="/predict" method="POST" class="content-start mt-2 flex flex-row-reverse gap-1 justify-end items-center" enctype="multipart/form-data">
+        <div class="w-64">
+            <div id="tbl" onclick="openDropdown('tbl','list')" class="flex w-full cursor-pointer rounded-lg p-2 bg-slate-800 hover:bg-slate-500 text-white font-medium selection::font-bold text-center mb-1 checked:bg-slate-700 ">
+                <p id="fileSelected" class="mx-auto">Select File</p>
+                <i class="fi fi-sr-caret-down flex text-center mt-1 mx-auto"></i>
+            </div>
+            <ul id="list" tabindex="0" class="hidden p-1 absolute w-64 h-40 menu shadow bg-base-100 rounded-box  bg-slate-800 rounded-lg overflow-y-scroll z-50">
+                {% for item in file %}
+                    <li>
+                        <input type="radio" id="{{ item['filename'] }}" name="sel" value="{{ item['filename'] }}" class="hidden peer" required>
+                        <label  for="{{ item['filename'] }}" class="py-2 inline-flex items-center justify-between w-full  rounded-md cursor-pointer  peer-checked:font-bold peer-checked:bg-slate-500 px-2 text-white  hover:bg-slate-700" onclick="closeDropDown('tbl','list', `{{ item['filename'] }}`, 'fileSelected')">              
+                                {{ item['filename'] }}
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <input type="hidden" name="proses" value="1">
+        <button id="btnsltpred" class="bg-slate-800 hover:bg-slate-500 p-7 py-2 mb-1 text-white rounded-lg content-start" type="submit">Select</button>
+    </form>
+
+    {% if label != null %}
+    <div class="p-4 ">
+        <h1 class="font-semibold text-2xl">Aturan Pengisian</h1>
+        <h2 class="text-sm">Aturan pengisian pertanyaan di bawah</h2>
+        <ol class="list-decimal list-inside">
+            {% for yy in label %}
+                {% if yy == 'AGE' %}
+                    <li class="text-sm">Age ===> 1 => 60 tahun, 0 => +60 tahun </li>
+                {% endif %}
+                {% if yy == 'DATE_DIED' %}
+                    <li class="text-sm">DATE_DIED ===> 1 => Meninggal, 0 => Hidup</li>
+                {% endif %}
+                {% if yy == 'SEX' %}
+                    <li class="text-sm">SEX ===> 1 => Laki - Laki, 0 => Perempuan</li>
+                {% endif %}
+            {% endfor %}
+            <li class="text-sm">OTHER ===> 1 => IYA, 0 => Tidak</li>
+        </ol>
+    </div>
+
+    <div class="flex">
+        <form id="predictForm" action="/predict" method="post" class="w-2/3">
+            <div class="p-5 w-full ">
+                <div class="grid grid-cols-1 2xl:grid-cols-2 gap-2">
+                    {% for item in label %}
+                    <div class="">
+                        <h1 class="font-semibold text-lg">{{ loop.index }}. {{ item }}</h1>
+                        <ul class="p-1 flex">
+                            <li class="mx-1">
+                                <input type="radio" id="ps{{ item }}" name="{{ item }}" value="1" class="hidden peer" required>
+                                <label for="ps{{ item }}" class="inline-flex items-center justify-between py-1 px-6 text-gray-500 bg-slate-200 border border-gray-400 border-solid rounded-lg cursor-pointer peer-checked:border-slate-400 peer-checked:bg-slate-400 peer-checked:text-white hover:text-gray-600 hover:bg-gray-100 ">                           
+                                    <div class="block">
+                                        <div class="text-lg font-semibold">1</div>
+                                    </div>
+                                </label>
+                            </li>
+                            <li  class="mx-1">
+                                <input type="radio" id="{{ item }}" name="{{ item }}" value="0" class="hidden peer">
+                                <label for="{{ item }}" class="inline-flex items-center justify-between py-1 px-6 text-gray-500 bg-slate-200 border border-gray-400 border-solid rounded-lg cursor-pointer peer-checked:border-slate-400 peer-checked:bg-slate-400 peer-checked:text-white hover:text-gray-600 hover:bg-gray-100 ">
+                                    <div class="block">
+                                        <div class="text-lg font-semibold">0</div>
+                                    </div>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="proses" value="2">
+                <div class="text-center p-4">
+                    <button id="prerun" class="bg-slate-800 px-5 py-2 text-white font-semibold rounded-lg hover:bg-slate-500 active:bg-slate-600" type="submit"> Submit </button>
+                </div>
+            </div>
+        </form>
+        <div class="p-4 w-full">
+            <h1 class="font-semibold text-lg">Result</h1>
+            <div class="bg-slate-800 rounded-lg p-4">
+                <table class="text-white font-semibold">
+                    <thead>
+                        <tr>
+                            <th>Metode</th>
+                            <th>Predict</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for til in hslpre %}
+                        <tr>
+                            <td>{{ til[0] }}</td>
+                            <td>{{ til[1] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>    
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div id="loading" class="hidden fixed w-full h-screen top-0 right-0 backdrop-blur-sm flex items-center justify-center bg-slate-800 bg-opacity-60">   
+        <img class="" src="{{ url_for('static', filename='gif/loading.gif') }}" alt="Loading...">
+    </div>
+
+    <div id="errorMessage" class="hidden text-red-500 text-center p-4">
+        <p>Error: Please fill out all required fields.</p>
+    </div>
+        
+    <script>
+        document.getElementById('btnsltpred').addEventListener('click', function(sss) {
+            
+            // Ambil nilai dari input dengan name 
+            const sel = document.querySelector('input[name="sel"]:checked');
+            
+            // Ambil elemen untuk pesan kesalahan
+            const cvbginf = document.getElementById('cvbginf');
+            const tifoti = document.getElementById('tifoti');
+            const lifoli = document.getElementById('lifoli');
+        
+            // Cek apakah kedua input kosong
+            if (!sel) {
+                // Cegah form agar tidak langsung submit
+                sss.preventDefault();
+                // Hapus pesan error yang sudah ada
+                tifoti.innerHTML = '';
+                lifoli.innerHTML = '';
+                
+                // Tambahkan pesan error
+                var erbd = document.createElement('p');
+                erbd.className = 'p-1 text-red-500 font-semibold';
+                erbd.innerText = 'Error';
+                tifoti.appendChild(erbd);
+        
+                var erls = document.createElement('p');
+                erls.className = 'p-1 my-auto text-red-500 font-semibold';
+                erls.innerText = '= Tidak ada file yang dipilih';
+                lifoli.appendChild(erls);
+            } 
+            cvbginf.classList.remove('hidden');
+        });
+
+
+
+        document.getElementById('prerun').addEventListener('click', function(event) {
+            event.preventDefault(); // Cegah form agar tidak langsung submit
+        
+            var form = document.getElementById('predictForm');
+            var radios = form.querySelectorAll('input[type="radio"]');
+            var labels = {};
+            var allFilled = true;
+
+            const cvbginf = document.getElementById('cvbginf');
+            const tifoti = document.getElementById('tifoti');
+            const lifoli = document.getElementById('lifoli');
+        
+            // Mengelompokkan radio berdasarkan nama
+            radios.forEach(function(radio) {
+                if (!labels[radio.name]) {
+                    labels[radio.name] = [];
+                }
+                labels[radio.name].push(radio);
+            });
+        
+            // Cek setiap grup radio apakah ada yang tidak dipilih
+            for (var name in labels) {
+                var group = labels[name];
+                var checked = false;
+        
+                group.forEach(function(radio) {
+                    if (radio.checked) {
+                        checked = true;
+                    }
+                });
+        
+                if (!checked) {
+                    allFilled = false;
+                    break;
+                }
+            }
+        
+            if (allFilled) {
+                // Sembunyikan pesan error
+                document.getElementById('errorMessage').classList.add('hidden');
+                // Tampilkan elemen loading
+                document.getElementById('loading').classList.remove('hidden');
+                // Submit form setelah validasi
+                
+                form.submit();
+            } else {
+                tifoti.innerHTML = '';
+                lifoli.innerHTML = '';
+
+                // Tambahkan pesan error
+                var erbd = document.createElement('p');
+                erbd.className = 'p-1 text-red-500 font-semibold';
+                erbd.innerText = 'Error';
+                tifoti.appendChild(erbd);
+        
+                var erls = document.createElement('p');
+                erls.className = 'p-1 my-auto text-red-500 font-semibold';
+                erls.innerText = '= Isi Dengan lengkap !!!';
+                lifoli.appendChild(erls);
+                cvbginf.classList.remove('hidden');
+            }
+        });
+    </script>
+{% endblock %}

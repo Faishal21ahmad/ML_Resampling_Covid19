@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    {{ title }} Model Evaluasi
+{% endblock %}
+
+{% block content %}
+
+<div class="flex">
+    <div class="flex w-full">
+        <div class="p-1">
+            <h1 class="font-semibold text-2xl">Petunjuk Penggunaan</h1>
+            <ol class="list-decimal list-inside ">
+                <li>Pilih File 1 dan File 2 yang akan dibandingkan</li>
+                <li>Klik Tombol Terapkan untuk melihat hasil Evaluasi</li>
+                <li>pengguna dapat memilih 1 file</li>
+                <li>pengguna dapat menggunakan filter</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Informasi Data -->
+    
+    <div class="w-2/3">
+        {% if filed %}
+        <div class="w-full flex bg-slate-800 p-2 text-white right-1 rounded-md">
+            <div class="w-20">
+                <p class="p-1">File</p>
+                <p class="p-1">Filter</p>
+                {% if error %}
+                <p class="p-1 text-red-500 font-semibold">Error</p>
+                {% endif %}
+            </div>
+            <div class="">
+                <p class="p-1 my-auto text-white font-semibold">=
+                    {% for ed in filed %}
+                        {{ ed }}
+                    {% endfor %}
+                </p>
+                <p class="p-1 my-auto text-white font-semibold">= 
+                    {% for r in rs %}
+                        {{ r }}
+                    {% endfor %}
+                    {% for al in alg %}
+                        {{ al }}
+                    {% endfor %}
+                    {% for t in ts %}
+                        {{ t }}
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+        {% endif %}
+        <div id="cvbginf" class="w-full hidden flex mt-2 bg-slate-800 p-2 text-white right-4 rounded-md">
+            <div id="tifoti" class="w-30">
+
+            </div>
+            <div id="lifoli" class="">
+
+            </div>
+        </div>
+    </div>
+        
+    
+</div>
+
+    <h1 class="text-xl font-semibold p-1 mt-2">Pilih File</h1>
+    <form id="bdfi" action="/banding" method="POST" class="content-start mt-2 flex flex-row-reverse gap-1 justify-end items-center" enctype="multipart/form-data">
+        <!-- FIle Select -->
+        <div class="w-full relative">
+            <!-- FIle Select 1 -->
+            <div id="setFile1" class="flex w-full cursor-pointer rounded-lg p-2 bg-slate-800 hover:bg-slate-500 text-white font-medium selection::font-bold text-center mb-1 checked:bg-slate-700" onclick="openDropdown(`setFile1`,`file1`)" >
+                <p id="txtbtnf1" class="mx-auto">Pilih File 2</p>
+                <i class="fi fi-sr-caret-down flex text-center mt-1 mx-2"></i>
+            </div>
+            <!-- DropDown -->
+            <ul id="file1" tabindex="0" class="hidden p-1 h-24 absolute w-full menu shadow rounded-box bg-slate-800 rounded-lg overflow-y-scroll z-40">
+                {% for item in file %}
+                    <li>
+                        <input type="radio" id="1{{ item }}" name="sel1" value="{{ item }}" class="hidden peer" >
+                        <label for="1{{ item }}" class="py-2 inline-flex items-center justify-between w-full  rounded-md cursor-pointer  peer-checked:font-bold peer-checked:bg-slate-500 px-2 text-white  hover:bg-slate-700" onclick="closeDropDown(`setFile1`,`file1`,`{{ item }}`,`txtbtnf1`)">                           
+                            {{ item }}
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- FIle Select 2 -->
+        <div class="w-full relative">
+            <div id="setFile2" class="flex w-full cursor-pointer rounded-lg p-2 bg-slate-800 hover:bg-slate-500 text-white font-medium selection::font-bold text-center mb-1 checked:bg-slate-700" onclick="openDropdown('setFile2','file2')">
+                <p id="txtbtnf2" class="mx-auto">Pilih File 1</p>
+                <i class="fi fi-sr-caret-down flex text-center mt-1 mx-2"></i>
+            </div>
+            <!-- DropDown -->
+            <ul id="file2" tabindex="0" class="hidden p-1 h-24 absolute w-full menu shadow bg-base-100 rounded-box  bg-slate-800 rounded-lg overflow-y-scroll  z-40">
+                {% for item in file %}
+                    <li>
+                        <input type="radio" id="2{{ item }}" name="sel2" value="{{ item }}" class="hidden peer" >
+                        <label for="2{{ item }}" class="py-2 inline-flex items-center justify-between w-full  rounded-md cursor-pointer  peer-checked:font-bold peer-checked:bg-slate-500 px-2 text-white  hover:bg-slate-700" onclick="closeDropDown('setFile2','file2',`{{ item }}`,'txtbtnf2')">                           
+                            {{ item }}
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <input type="hidden" name="proses" value="1">
+        <button id="slf1" class="bg-slate-800 hover:bg-slate-500 p-7 py-2 mb-1 text-white rounded-lg content-start" type="submit">Pilih</button>
+    </form>
+
+    {% if grub != 'none' %}
+        <h1 class="font-semibold text-xl m-1">Fillter</h1>
+        <form action="/banding" method="POST" class="flex flex-row-reverse justify-end w-80 items-end">
+            <div class="static">
+                <div id="tblfil" class="flex w-72 cursor-pointer rounded-lg p-2 bg-slate-800 hover:bg-slate-500 text-white font-medium selection::font-bold text-center mb-1 checked:bg-slate-700" onclick="openDropdown('tblfil','filter')">
+                    <p class="mx-auto">Pilih Filter</p>
+                    <i class="fi fi-sr-caret-down flex text-center mt-1 mx-2"></i>
+                </div>
+                
+                <div id="filter" class="z-0 hidden w-72 absolute bg-slate-800 p-2 rounded-md ">
+                    <ul class="flex space-x-1 mb-1  text-white font-semibold text-center items-center ">
+                        <li class="w-full">
+                            <input type="checkbox" id="algo" value="SVM" name="algo" class="hidden peer">
+                            <label for="algo" class="bg-slate-800 hover:bg-slate-400 hover:rounded-sm peer-checked:bg-slate-600 p-1 w-full inline-flex justify-center cursor-pointer peer-checked:rounded-sm"> 
+                                SVM
+                            </label>
+                        </li>
+                        <li class="w-full">
+                            <input type="checkbox" id="algo1" value="RF" name="algo" class="hidden peer">
+                            <label for="algo1" class="bg-slate-800 hover:bg-slate-400 hover:rounded-sm peer-checked:bg-slate-600 p-1 w-full inline-flex justify-center cursor-pointer peer-checked:rounded-sm"> 
+                                RF
+                            </label>
+                        </li>
+                        <li class="w-full">
+                            <input type="checkbox" id="algo2" value="NN" name="algo" class="hidden peer">
+                            <label for="algo2" class="bg-slate-800 hover:bg-slate-400 hover:rounded-sm peer-checked:bg-slate-600 p-1 w-full inline-flex justify-center cursor-pointer peer-checked:rounded-sm"> 
+                                NN
+                                </label>
+                        </li>
+                    </ul>
+                    <ul class="flex space-x-1 mb-1  text-white font-semibold text-center items-center ">
+                        <li class="w-full">
+                            <input type="checkbox" id="resam" value="Oriset" name="resam" class="hidden peer">
+                            <label for="resam" class="bg-slate-800 hover:bg-slate-400 hover:rounded-sm peer-checked:bg-slate-600 p-1 w-full inline-flex justify-center cursor-pointer peer-checked:rounded-sm"> 
+                                Oriset
+                                </label>
+                        </li>
+                        <li class="w-full">
+                            <input type="checkbox" id="resam1" value="Smote" name="resam" class="hidden peer">
+                            <label for="resam1" class="bg-slate-800 hover:bg-slate-400 hover:rounded-sm peer-checked:bg-slate-600 p-1 w-full inline-flex justify-center cursor-pointer peer-checked:rounded-sm"> 
+                                Smote
+                                </label>
+                        </li>
+                        <li class="w-full">
+                            <input type="checkbox" id="resam2" value="Adasyn" name="resam" class="hidden peer">
+                            <label for="resam2" class="bg-slate-800 hover:bg-slate-400 hover:rounded-sm peer-checked:bg-slate-600 p-1 w-full inline-flex justify-center cursor-pointer peer-checked:rounded-sm"> 
+                                Adasyn
+                                </label>
+                        </li>
+                    </ul>
+                    <ul class="flex space-x-1 mb-1  text-white font-semibold text-center items-center ">
+                        <li class="w-full">
+                            <input type="checkbox" id="dts" value="TS_9:1" name="dts" class="hidden peer">
+                            <label for="dts" class="bg-slate-800 hover:bg-slate-400 hover:rounded-sm peer-checked:bg-slate-600 p-1 w-full inline-flex justify-center cursor-pointer peer-checked:rounded-sm"> 
+                                TS_9:1
+                                </label>
+                        </li>
+                        <li class="w-full">
+                            <input type="checkbox" id="dts1" value="TS_8:2" name="dts" class="hidden peer">
+                            <label for="dts1" class="bg-slate-800 hover:bg-slate-400 hover:rounded-sm peer-checked:bg-slate-600 p-1 w-full inline-flex justify-center cursor-pointer peer-checked:rounded-sm"> 
+                                TS_8:2
+                                </label>
+                        </li>
+                        <li class="w-full">
+                            <input type="checkbox" id="dts2" value="TS_7:3" name="dts" class="hidden peer">
+                            <label for="dts2" class="bg-slate-800 hover:bg-slate-400 hover:rounded-sm peer-checked:bg-slate-600 p-1 w-full inline-flex justify-center cursor-pointer peer-checked:rounded-sm"> 
+                                TS_7:3
+                                </label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <input type="hidden" name="proses" value="2">
+            <button id="terap" class="bg-slate-800 hover:bg-slate-500 p-7 py-2 mb-1 text-white rounded-lg content-start m-1" type="submit">Terapkan</button>
+        </form>
+
+        
+        <h1 class="text-xl font-semibold p-1 mt-2">Detail Evaluasi</h1>
+        <!-- Title File -->
+        
+            <div id="File" class="flex gap-2">
+                {% for fil in grub %}
+                    <div class="mt-2 w-full overflow-hidden">
+                        <h1 class="p-1 bg-slate-800 rounded-tl-md font-semibold rounded-tr-md text-white text-center">{{ fil[0][0] }}</h1>
+                    </div>
+                {% endfor %}
+            </div>
+    
+            <!-- output result oversamling / resampling -->
+            <div id="resampling" class="flex gap-2">
+                {% for items in grub %}
+                <div id="resampling1" class="w-full flex gap-2">
+                    {% for item in items %}
+                        {% for it in item[1] %}
+                        <div class="mt-2 w-full">
+                            <h1 class="p-1 bg-slate-800 rounded-tl-md font-semibold rounded-tr-md text-white text-center">{{ it[0] }}</h1>
+                            <div class="">
+                                <p>1 = {{ it[1][1] }}</p>
+                                <p>0 = {{ it[1][0] }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+ 
+            
+
+
+        <!-- Output Result Score -->
+        <div id="akurasi" class="flex">
+            <div id="akurasi1" class="w-full flex gap-1">
+                <!-- Title Sekenario -->
+                {% for items in grub[0] %}
+                <table class="table-auto w-1/6 mb-3">
+                    <thead class="overflow-visible">
+                        <tr class="bg-slate-800 text-white text-center rounded-tl-md rounded-tr-md">
+                            <th class="p-1 rounded-tl-md rounded-tr-md">Sekenario</th>
+                        </tr>
+                    </thead>
+                    <tbody class="overflow-visible">
+                            {% for it in items[2] %}
+                                {% if it[0] == alg[0] or it[0] == alg[1] or it[0] == alg[2]%}
+                                    {% if it[1] == rs[0] or it[1] == rs[1] or it[1] == rs[2]%}
+                                        {% if it[2] == ts[0] or it[2] == ts[1] or it[2] == ts[2]%}
+                                            <tr class="text-center">
+                                                <td class="bg-slate-400 cursor-pointer hover:bg-slate-500 ">{{ it[0] }}_{{ it[1] }}_{{ it[2] }}</td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                    </tbody>
+                </table>     
+                {% endfor %}   
+                <!-- Main Tabel -->
+                {% for data in grub %}
+                <div class="overflow-x-scroll w-full ">
+                    <table class="w-full">
+                        <thead class="">
+                            <tr class="bg-slate-800 text-white text-center  ">
+                                <th class="p-1 rounded-tl-md">Accuracy</th>
+                                <th class="p-1">Precision</th>
+                                <th class="p-1">Recall</th>
+                                <th class="p-1">Specificity</th>
+                                <th class="p-1">F1_Score</th>
+                                <th class="p-1 rounded-tr-md">G_Mean</th>
+                            </tr>
+                        </thead>
+                        <tbody class="">
+                            {% for items in data %}
+                                {% for it in items[2] %}
+                                    {% if it[0] == alg[0] or it[0] == alg[1] or it[0] == alg[2]%}
+                                        {% if it[1] == rs[0] or it[1] == rs[1] or it[1] == rs[2]%}
+                                            {% if it[2] == ts[0] or it[2] == ts[1] or it[2] == ts[2]%}
+                                                <tr class="text-center ">
+                                                    <td class="">{{ it[3] }}%</td>
+                                                    <td class="">{{ it[4] }}%</td>
+                                                    <td class="">{{ it[5] }}%</td>
+                                                    <td class="">{{ it[6] }}%</td>
+                                                    <td class="">{{ it[7] }}%</td>
+                                                    <td class="">{{ it[8] }}%</td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>  
+                </div>   
+                {% endfor %}                       
+            </div>
+        </div>
+    {% endif %}
+    
+
+    <script>
+        document.getElementById('slf1').addEventListener('click', function(sss) {
+            
+            // Ambil nilai dari input dengan name sel1 dan sel2
+            const sel1 = document.querySelector('input[name="sel1"]:checked');
+            const sel2 = document.querySelector('input[name="sel2"]:checked');
+            
+            // Ambil elemen untuk pesan kesalahan
+            const cvbginf = document.getElementById('cvbginf');
+            const tifoti = document.getElementById('tifoti');
+            const lifoli = document.getElementById('lifoli');
+        
+            // Cek apakah kedua input kosong
+            if (!sel1 && !sel2) {
+                // Cegah form agar tidak langsung submit
+                sss.preventDefault();
+                // Hapus pesan error yang sudah ada
+                tifoti.innerHTML = '';
+                lifoli.innerHTML = '';
+                
+                // Tambahkan pesan error
+                var erbd = document.createElement('p');
+                erbd.className = 'p-1 text-red-500 font-semibold';
+                erbd.innerText = 'Error';
+                tifoti.appendChild(erbd);
+        
+                var erls = document.createElement('p');
+                erls.className = 'p-1 my-auto text-red-500 font-semibold';
+                erls.innerText = '= Tidak ada file yang dipilih';
+                lifoli.appendChild(erls);
+            } 
+            cvbginf.classList.remove('hidden');
+        });
+    </script>
+{% endblock %}

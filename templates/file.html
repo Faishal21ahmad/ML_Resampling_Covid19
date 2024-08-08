@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    List {{ title }}
+{% endblock %}
+
+{% block content %}
+    {% if alert != null %}
+        <div id="alert" class="absolute bg-slate-800 py-3 px-8 font-semibold text-white right-36 rounded-lg shadow-md transition ease-in-out backdrop-opacity-10">
+            {{ alert }}
+        </div>
+    {% endif %}
+
+    <table class="w-1/2">
+        <thead class="bg-slate-800">
+            <tr class="text-white">
+                <th class="p-1 font-medium text-center rounded-tl-md">NO.</th>
+                <th class="p-1 font-medium text-left">Nama File</th>
+                <th class="p-1 font-medium text-center rounded-tr-md">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in file %}
+                <tr>
+                    <td class="p-1 font-medium text-center">{{ loop.index }}.</td>
+                    <td class="p-1 font-medium">{{ item['filename'] }}</td>
+                    <td class="p-1 font-medium text-center">
+                        <form action="/file" method="POST">
+                            <input class="hidden" id="itd" name="itd" type="text" value="{{ item['filename'] }}">
+                            <button type="submit" class="py-1 px-5 bg-red-600 rounded-lg">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

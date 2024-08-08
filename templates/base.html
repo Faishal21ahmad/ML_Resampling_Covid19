@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylecst.css') }}">
+    
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+
+</head>
+<body class="bg-slate-900 mx-auto">
+    <div class="mx-32 my-2 h-dvh">
+        <div id="div_header" class="p-4 bg-slate-300 rounded-md">
+            <h1 class="font-semibold text-2xl">{% block header %}{% endblock %}</h1>
+        </div>
+        <div class="flex mt-3">
+            <!-- Navigasi Sidebar -->
+            <div id="navigasi" class="w-1/6 mr-3 bg-slate-300 rounded-md">
+                <div class="p-5">
+                    <img class="w-full h-full" src="{{ url_for('static', filename='/img/ML.png') }}">
+                </div>
+                <div class="w-10/12 h-1 bg-slate-400 mx-auto rounded-lg"></div>
+                <div class="p-2">
+                    <ul class="font-bold">
+                        <a href="{{ url_for('root') }}"><li class="p-2 hover:bg-slate-400 rounded-md cursor-pointer overflow-hidden">Evaluasi</li></a>
+                        <a href="{{ url_for('banding') }}"><li class="p-2 hover:bg-slate-400 rounded-md cursor-pointer overflow-hidden">Banding</li></a>
+                        <a href="{{ url_for('predict') }}"><li class="p-2 hover:bg-slate-400 rounded-md cursor-pointer overflow-hidden">Prediksi</li></a>
+                        <a href="{{ url_for('file') }}"><li class="p-2 hover:bg-slate-400 rounded-md cursor-pointer overflow-hidden">File</li></a>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="content" class="w-full p-4 min-h-96 bg-slate-300 rounded-md overflow-hidden">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/js.js') }}"></script>
+</body>
+</html>

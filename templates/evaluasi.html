@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    {{ title }} Model
+{% endblock %}
+
+{% block content %}
+    <div class="flex">
+        <div class="flex w-full">
+            <div class="p-1">
+                <h1 class="font-semibold text-2xl">Petunjuk Penggunaan</h1>
+                <ol class="list-decimal list-inside ">
+                    <li>Pilih File CSV dan isi jumlah sample data yang akan digunkakan</li>
+                    <li>Klik Upload Untuk Melanjutkan Step selanjutnya</li>
+                    <li>Pilih Kolom Fitur yang dipilih sebagai kolom Klasifikasi</li>
+                    <li>Klik klik Run untuk memulai Evaluasi model</li>
+                </ol>
+            </div>
+        </div>
+
+    
+       
+        <!-- Informasi Data -->
+        <div class="w-2/3">
+            {% if fil or count_data or cls or error %}
+            <div class="w-full flex bg-slate-800 p-2 text-white right-4 rounded-md">
+                <div  class="w-30">
+                    {% if fil %}
+                        <p class="p-1">File</p>
+                    {% endif %}
+                    {% if count_data %}
+                        <p class="p-1">Sampel Data</p>
+                    {% endif %}
+                    {% if i %}
+                        <p class="p-1">Kolom Fitur</p>
+                    {% endif %}
+                    {% if cls %}
+                        <p class="p-1">Klasifikasi</p>
+                    {% endif %}
+                    {% if error %}
+                        <p class="p-1 text-red-500 font-semibold">Error</p>
+                    {% endif %}
+                </div>
+                <div  class="">
+                    {% if fil %}
+                        <p class="p-1 my-auto text-white font-semibold">= {{ fil }}</p>   
+                    {% endif %}
+    
+                    {% if count_data %}
+                        <p class="p-1 my-auto text-white font-semibold">= {{ count_data }}</p> 
+                    {% endif %}
+    
+                    {% if i %}
+                        <p class="p-1 my-auto text-white font-semibold">=  {{ i }}</p>   
+                    {% endif %}
+    
+                    {% if cls %}
+                        <p class="p-1 my-auto text-white font-semibold">=  {{ cls }}</p>   
+                    {% endif %}
+    
+                    {% if error %}
+                        <p class="p-1 my-auto text-red-500 font-semibold">=  {{ error }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div id="msger" class="w-full hidden flex mt-2 bg-slate-800 p-2 text-white right-4 rounded-md">
+                <div id="titlelistinfo" class="w-30">
+    
+                </div>
+                <div id="listinfo" class="">
+    
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="flex">
+        <!-- Input dan Select Data -->
+        <div id="InputCSV" class="w-full">
+            <h1 class="text-xl font-semibold p-1"> Input Data CSV </h1>
+            <form action="/" method="POST" class="items-center" enctype="multipart/form-data">
+                <div class="gap-1 flex flex-row-reverse justify-end">
+                    <label for="file" class="block cursor-pointer ">
+                        <span class="sr-only">Choose File</span>
+                        <input name="file" id="file" type="file" title="Pilih File" class="block w-full text-sm text-slate-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-md file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-violet-50 file:text-slate-800
+                            hover:file:bg-violet-100 cursor-pointer 
+                        " required/>
+                    </label>
+                    <input type="number" name="num_rows" id="num_rows" title="Jumlah Data" class="bg-slate-800 hover:bg-slate-500 px-4 py-1 text-white rounded-lg" value="500" required>
+                  
+                    <input type="hidden" name="proses" value="1">
+                    <button id="uploadFi" class="bg-slate-800 hover:bg-slate-500 px-4 py-1 text-white rounded-lg" type="submit">Upload</button>
+                </div>
+            </form>
+
+            <!-- Select Label Klasifikasi -->
+            {% if co %}
+            <h1 class="text-xl font-semibold p-1">Pilih Kolom Fitur Klasifikasi</h1>
+            <form action="/" method="POST" enctype="multipart/form-data" class="content-start flex flex-row-reverse gap-1 justify-end">
+                <div class="dropdown w-56"  id="myDropdown">
+                    <div id="tbl" onclick="openDropdown(`tbl`,`list`)" title="Pilih kolom Klasifikasi"  class="flex w-full cursor-pointer rounded-lg p-2 bg-slate-800 hover:bg-slate-500 text-white font-medium selection::font-bold text-center mb-1 checked:bg-slate-700">
+                        <p id="txtbtn" class="mx-auto">Label Klasifikasi</p>
+                        <i class="fi fi-sr-caret-down flex text-center mt-0.5 mx-auto"></i>
+                    </div>
+                    <ul id="list" tabindex="0" class="dropdown-content hidden p-1 absolute w-56 max-h-96 menu shadow bg-base-100 rounded-box  bg-slate-800 rounded-lg overflow-y-scroll">
+                        {% for item in co %}
+                            <li>
+                                <input type="radio" id="{{ item }}" name="kls" value="{{ item }}" class="hidden peer">
+                                <label id="itema" for="{{ item }}" class="py-2 inline-flex items-center justify-between w-full  rounded-md cursor-pointer  peer-checked:font-bold peer-checked:bg-slate-500 px-2 text-white  hover:bg-slate-700" onclick="closeDropDown(`tbl`,`list`,`{{ item }}`,`txtbtn`)">{{ item }}</label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <input type="hidden" name="proses" value="2">
+                <button id="runEvaluasi" class="bg-slate-800 hover:bg-slate-500 p-7 py-2 mb-1 text-white rounded-lg content-start" type="submit">Run</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    
+
+    {% if data != null %}
+        <!-- Menampilkan Data CSV Seluruh Kolom -->
+        <h1 class="text-xl font-semibold p-1">Display</h1>
+        <div class="w-full h-44 bg-slate-800 rounded-lg overflow-scroll no-scrollbar">
+            <table class="">
+                {% for row in data %}
+                    <tr class="">
+                        {% for f in range(i) %}
+                            <td class="pl-4 text-center text-white">{{ row[f] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+
+    {% if result != null %}
+        <!-- Menampilkan Hasil Resempling -->
+        <h1 class="mt-4 text-xl font-semibold p-1">Resampling Counter</h1>
+        <div class="flex gap-2 w-full">
+            {% for recount in resamcount %}
+                <div class="mt-2 h-full w-full">
+                    <h1 class="p-1 bg-slate-800 rounded-tl-md font-semibold rounded-tr-md text-white text-center">{{ recount[0] }}</h1>
+                    <div class="">
+                        <!-- <p>{{ recount[1] }}</p> -->
+                        <p class="px-3 py-1">1 = {{ recount[1][1] }}</p>
+                        <p class="px-3 py-1">0 = {{ recount[1][0] }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Menampilkan Score Accurasy -->
+        <h1 class="mt-4 text-xl font-semibold p-1">Hasil</h1>
+        <table class="table-auto w-full">
+            <thead class="">
+                <tr class="bg-slate-700 text-white text-center rounded-2xl">
+                    <th class="p-1 rounded-tl-md">Algoritma</th>
+                    <th class="p-1">Oversampling</th>
+                    <th class="p-1">Data Split</th>
+                    <th class="p-1">Accuracy</th>
+                    <th class="p-1">Precision</th>
+                    <th class="p-1">Recall</th>
+                    <th class="p-1">Specificity</th>
+                    <th class="p-1">F1 Score</th>
+                    <th class="p-1 rounded-tr-md">G-Mean</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in result %}
+                        <tr class="text-center">
+                            <td class="bg-slate-400 cursor-pointer hover:bg-slate-500">{{ item[0] }}</td>
+                            <td class="bg-slate-400 cursor-pointer hover:bg-slate-500">{{ item[1] }}</td>
+                            <td class="bg-slate-400 cursor-pointer hover:bg-slate-500">{{ item[2] }}</td>
+                            <td class="">{{ item[3] }} %</td>
+                            <td class="">{{ item[4] }} %</td>
+                            <td class="">{{ item[5] }} %</td>
+                            <td class="">{{ item[6] }} %</td>
+                            <td class="">{{ item[7] }} %</td>
+                            <td class="">{{ item[8] }} %</td>
+                        </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <div id="loading" class="hidden fixed w-full h-screen top-0 right-0 backdrop-blur-sm flex items-center justify-center bg-slate-800 bg-opacity-60">   
+        <img class="" src="{{ url_for('static', filename='gif/loading.gif') }}" alt="Loading...">
+    </div>
+
+    
+
+{% endblock %}
+
