@@ -39,3 +39,6 @@ pth = 'C:\Users\ishal\Documents\ML_Resampling_Cls_Covid'    (Windows)
 
 Rubah Posisi aplikasi
 
+# Repository
+https://github.com/Faishal21ahmad/ML_Resampling_Covid19.git
+
